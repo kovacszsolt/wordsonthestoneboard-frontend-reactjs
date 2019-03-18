@@ -1,0 +1,109 @@
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-size: 100%;
+    background-color: yellow;
+    background-repeat: no-repeat;
+    align-items: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    text-align: center;
+}
+
+header h1 {
+    color: white;
+    font-size: 2rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+header button {
+    background-color: transparent;
+    border: unset;
+}
+
+header button .fa {
+    font-size: 2rem;
+    color: #325C80;
+}
+
+header .search {
+    display: flex;
+    flex-direction: row;
+}
+
+header .search input[type="text"] {
+    width: 30rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: black;
+    border: 1px solid #EA5561;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-right: 1rem;
+}
+
+header .search input[type="text"]:focus {
+    border: 1px solid red !important;
+    outline: none !important;
+    box-shadow: unset;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-header span {
+    color: rgba(0, 0, 0, .5);
+    font-size: 1.2rem;
+}
+
+.list-header .paginator {
+    background-color: #F8F8F8;
+}
+
+.list-header .paginator button {
+    border: unset;
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+    background: transparent;
+}
+
+.list-header .paginator button.fa-angle-right {
+    margin-left: 0.5rem;
+}
+
+.list-header .paginator button.fa-angle-right:focus {
+    border: unset;
+    outline: none !important;
+    box-shadow: unset;
+}
+
+.list {
+    margin-top: 10px;
+    display: grid;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.content {
+    width: 1000px;
+    border: 1px solid lightgray;
+    background-color: white;
+}
+
+.content .religion {
+    margin-left: 20px;
+    font-weight: 700;
+}
+
+.content .text {
+    margin-left: 40px;
+    margin-right: 20px;
+}
