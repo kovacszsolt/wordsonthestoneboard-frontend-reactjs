@@ -1,16 +1,16 @@
-import React, { Component, Fragment } from 'react';
+import React, {Component, Fragment} from 'react';
 import './App.css';
 
 class App extends Component {
     tmpCurrentPos = 0;
-    isWebSql = true;
-    itemPerPage = 3;
+    itemPerPage = 5;
     db;
     storeObject;
 
     constructor(props) {
         super(props);
         this.state = {
+            isWebSql: true,
             currentPos: 0,
             offline: false,
             searchText: 'god',
@@ -23,11 +23,11 @@ class App extends Component {
     }
 
     init = () => {
+        const isWebSql = true;
         if (window.openDatabase === undefined) {
-            this.isWebSql = false;
+            this.setState({isWebSql: false});
         }
-        this.isWebSql = false;
-        if (this.isWebSql) {
+        if (isWebSql) {
             this.initWebSQL();
         } else {
             this.initIndexedDB();
@@ -40,20 +40,20 @@ class App extends Component {
             db.transaction((tx) => {
                 tx.executeSql('SELECT COUNT(*) AS rowcount FROM paragraph', [], (tx, results) => {
                     if (parseInt(results.rows[0]['rowcount']) !== 0) {
-                        this.setState({ offline: true });
+                        this.setState({offline: true});
                     }
                 });
             });
         });
-    }
+    };
 
     initIndexedDB = () => {
         const dbRequest = indexedDB.open('religion', 1);
         dbRequest.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains('religion')) {
-                const tweetListStore = db.createObjectStore('religion', { autoIncrement: true });
-                tweetListStore.createIndex('religion', 'religion', { unique: false });
+                const tweetListStore = db.createObjectStore('religion', {autoIncrement: true});
+                tweetListStore.createIndex('religion', 'religion', {unique: false});
             }
         };
         dbRequest.onsuccess = (event) => {
@@ -64,15 +64,14 @@ class App extends Component {
                 this.storeObject = transList.objectStore('religion');
                 this.countIndexedDB().then((countIndexedDB) => {
                     if (countIndexedDB !== 0) {
-                        this.setState({ offline: true });
+                        this.setState({offline: true});
                     } else {
 
                     }
                 });
             }
         }
-    }
-
+    };
 
 
     countIndexedDB = () => {
@@ -83,10 +82,7 @@ class App extends Component {
                 }
             }
         });
-    }
-
-
-
+    };
 
 
     insertRecordWebSQL = (tx, record) => {
@@ -95,17 +91,17 @@ class App extends Component {
                 [record._id, record.religion, record.book, record.pos, record.text], (tx1) => {
                     this.tmpCurrentPos++;
                     if ((this.tmpCurrentPos / 500) === Math.floor(this.tmpCurrentPos / 500)) {
-                        this.setState({ currentPos: this.tmpCurrentPos });
+                        this.setState({currentPos: this.tmpCurrentPos});
                     }
                     resolve(record._id);
                 });
         });
-    }
+    };
 
 
     createData = () => {
-        if (this.isWebSql) {
-            this.reateDataWebSQL();
+        if (this.state.isWebSql) {
+            this.createDataWebSQL();
         } else {
             this.createDataIndexedDB();
         }
@@ -115,12 +111,12 @@ class App extends Component {
         this.getData().then((records) => {
             const transList = this.db.transaction('religion', 'readwrite');
             this.storeObject = transList.objectStore('religion');
-            Promise.all(records.map(record => this.insertRecordIndexedDB(record))).then((qqq) => {
-                this.setState({ offline: true });
+            Promise.all(records.map(record => this.insertRecordIndexedDB(record))).then(() => {
+                this.setState({offline: true});
             });
 
         });
-    }
+    };
 
     insertRecordIndexedDB = (record) => {
         return new Promise((resolve, reject) => {
@@ -129,26 +125,24 @@ class App extends Component {
                 if (addResult.type === 'success') {
                     this.tmpCurrentPos++;
                     if ((this.tmpCurrentPos / 500) === Math.floor(this.tmpCurrentPos / 500)) {
-                        this.setState({ currentPos: this.tmpCurrentPos });
+                        this.setState({currentPos: this.tmpCurrentPos});
                     }
                     resolve(record._id);
                 }
             }
 
         });
-    }
+    };
 
     createDataWebSQL = () => {
         this.getData().then((records) => {
             this.db.transaction((tx) => {
                 Promise.all(records.map(record => this.insertRecordWebSQL(tx, record))).then((qqq) => {
-                    this.setState({ offline: true });
+                    this.setState({offline: true, currentPos: 0});
                 });
             });
         });
-    }
-
-
+    };
 
 
     getData = () => {
@@ -163,18 +157,16 @@ class App extends Component {
                     }
                 )
         });
-    }
+    };
 
     submit = (e) => {
         e.preventDefault();
-
-        console.log(this.state.searchText);
         if (this.state.offline) {
             this.searchOffline();
         } else {
             this.searchOnline();
         }
-    }
+    };
 
     searchOnline = () => {
         fetch('https://wordsonthestoneboard.com/backend/find/' + this.state.searchText)
@@ -186,7 +178,7 @@ class App extends Component {
                 (error) => {
                 }
             )
-    }
+    };
 
     createDatabase = () => {
         return new Promise((resolve, reject) => {
@@ -196,26 +188,26 @@ class App extends Component {
                 resolve(db);
             })
         })
-    }
+    };
 
     searchOffline = () => {
-        if (this.isWebSql) {
+        if (this.state.isWebSql) {
             this.searchOfflineWebSQL();
         } else {
             this.searchOfflineIndexedDB();
         }
-    }
+    };
 
     searchOfflineIndexedDB = () => {
         const transList = this.db.transaction('religion', 'readwrite');
         this.storeObject = transList.objectStore('religion');
         this.storeObject.getAll().onsuccess = (event) => {
             if (event.type === 'success') {
-                const records=event.target.result.filter(record => String(record.text).valueOf().includes(this.state.searchText))
+                const records = event.target.result.filter(record => String(record.text).valueOf().includes(this.state.searchText))
                 this.searchValueInit(records);
             }
         }
-    }
+    };
 
     searchOfflineWebSQL = () => {
         this.db.transaction((tx) => {
@@ -224,7 +216,7 @@ class App extends Component {
                 this.searchValueInit(searchResultAll);
             });
         });
-    }
+    };
 
     searchValueInit = (searchResultAll) => {
         this.setState({
@@ -233,13 +225,13 @@ class App extends Component {
             searchResult: searchResultAll.slice(0, this.itemPerPage),
             maxPageCount: Math.ceil(searchResultAll.length / this.itemPerPage)
         });
-    }
+    };
 
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
-    }
+    };
 
     gotoPage = (pageNumber) => {
         const searchResultAll = this.state.searchResultAll;
@@ -247,8 +239,7 @@ class App extends Component {
             currentPageNumber: pageNumber,
             searchResult: searchResultAll.slice((pageNumber - 1) * this.itemPerPage, pageNumber * this.itemPerPage),
         });
-    }
-
+    };
 
 
     render() {
@@ -257,48 +248,61 @@ class App extends Component {
                 <header>
                     <h1>
                         Words on the Stone Board
-                    {this.state.offline ? (
-                            ''
-                        ) :
+                        {this.state.offline ? (
+                                ''
+                            ) :
                             <button>
-                                <span className="fa fa-cloud-download-alt" onClick={this.createData}></span>
+                                <span className="fa fa-cloud-download-alt" onClick={this.createData}> </span>
                             </button>
                         }
                     </h1>
-                    <p>{this.state.currentPos}</p>
-                    <form className="search" onSubmit={this.submit} >
-                        <input type="text" placeholder="Type here something" name="searchText" value={this.state.searchText} onChange={e => this.handleChange(e)} />
+                    <p>{this.state.offline ? 'Offline' : 'Online'} {this.state.isWebSql ? 'WebSQL' : 'IndexedDB'}</p>
+                    <p>{this.state.currentPos === 0 ? '' : 'import position: ' + this.state.currentPos}</p>
+                    <form className="search" onSubmit={this.submit}>
+                        <input type="text" placeholder="Type here something" name="searchText"
+                               value={this.state.searchText} onChange={e => this.handleChange(e)}/>
                         <button type="submit">
-                            <span className="fa fa-search"></span>
+                            <span className="fa fa-search"> </span>
                         </button>
                     </form>
                 </header>
-                <div className="list">
-                    <div className="list-header">
-                        <span>{this.state.searchResultAll.length} pcs</span>
-                        <span className="blinking" ></span>
-                        <div className="paginator">
-                            <button className="fa fa-angle-double-left" disabled={this.state.currentPageNumber === 1} onClick={() => this.gotoPage(1)}></button>
-                            <button className="fa fa-angle-left" disabled={this.state.currentPageNumber === 1} onClick={() => this.gotoPage(this.state.currentPageNumber - 1)}  ></button>
-                            <span>{this.state.currentPageNumber} / {this.state.maxPageCount}</span>
-                            <button className="fa fa-angle-right" disabled={this.state.currentPageNumber === this.state.maxPageCount} onClick={() => this.gotoPage(this.state.currentPageNumber + 1)} ></button>
-                            <button className="fa fa-angle-double-right" disabled={this.state.currentPageNumber === this.state.maxPageCount} onClick={() => this.gotoPage(this.state.maxPageCount)} ></button>
+                {this.state.searchResultAll.length === 0 ?
+                    '' :
+                    <div className="list">
+                        <div className="list-header">
+                            <span>{this.state.searchResultAll.length} pcs</span>
+                            <span className="blinking"> </span>
+                            <div className="paginator">
+                                <button className="fa fa-angle-double-left"
+                                        disabled={this.state.currentPageNumber === 1}
+                                        onClick={() => this.gotoPage(1)}></button>
+                                <button className="fa fa-angle-left" disabled={this.state.currentPageNumber === 1}
+                                        onClick={() => this.gotoPage(this.state.currentPageNumber - 1)}></button>
+                                <span>{this.state.currentPageNumber} / {this.state.maxPageCount}</span>
+                                <button className="fa fa-angle-right"
+                                        disabled={this.state.currentPageNumber === this.state.maxPageCount}
+                                        onClick={() => this.gotoPage(this.state.currentPageNumber + 1)}></button>
+                                <button className="fa fa-angle-double-right"
+                                        disabled={this.state.currentPageNumber === this.state.maxPageCount}
+                                        onClick={() => this.gotoPage(this.state.maxPageCount)}></button>
+                            </div>
+                        </div>
+
+
+                        <div className="content">
+                            {this.state.searchResult.map((record) => {
+                                return (
+                                    <div key={record._id} className="content">
+                                        <p className="religion">{record.religion}</p>
+                                        <p className="text">{record.text}</p>
+                                    </div>
+                                )
+                            })
+                            }
                         </div>
                     </div>
+                }
 
-
-                    <div className="content">
-                        {this.state.searchResult.map((record) => {
-                            return (
-                                <div key={record._id} className="content">
-                                    <p className="religion">{record.religion}</p>
-                                    <p className="text">{record.text}</p>
-                                </div>
-                            )
-                        })
-                        }
-                    </div>
-                </div>
             </Fragment>
         );
     }

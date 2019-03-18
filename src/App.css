@@ -3,7 +3,7 @@ header {
     flex-direction: column;
     justify-content: center;
     background-size: 100%;
-    background-color: yellow;
+    background-image: url("/header2.png");
     background-repeat: no-repeat;
     align-items: center;
     padding-top: 25px;
@@ -59,10 +59,6 @@ header .search input[type="text"]:focus {
 .list-header span {
     color: rgba(0, 0, 0, .5);
     font-size: 1.2rem;
-}
-
-.list-header .paginator {
-    background-color: #F8F8F8;
 }
 
 .list-header .paginator button {
