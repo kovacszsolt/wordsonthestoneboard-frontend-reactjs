@@ -1,0 +1,32 @@
+cache:
+  paths:
+    - build/
+stages:
+  - build
+  - create
+
+build:
+  image: node:latest
+  stage: build
+  script:
+    - npm install
+    - npm run build
+
+create:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay
+    CI_REGISTRY: registry.gitlab.com
+    CI_REGISTRY_IMAGE: registry.gitlab.com/smith.zsolt/wordsonthestoneboard-frontend-reactjs
+  before_script:
+    - docker info
+  script:
+    - ls -l
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker build --pull -t "${CI_REGISTRY_IMAGE}:latest" .
+    - docker push "${CI_REGISTRY_IMAGE}:latest"
+  only:
+    - master
