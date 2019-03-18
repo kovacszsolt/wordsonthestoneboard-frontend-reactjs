@@ -1,7 +1,8 @@
 {
-  "name": "korte",
-  "version": "0.1.0",
-  "private": true,
+  "name": "wordsonthestoneboard-frontend",
+  "version": "1.0.0",
+  "homepage": "https://wordsonthestoneboard.com/",
+  "private": false,
   "dependencies": {
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
@@ -15,6 +16,10 @@
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kovacszsolt/wordsonthestoneboard-frontend.git"
   },
   "browserslist": [
     ">0.2%",

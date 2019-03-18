@@ -23,6 +23,12 @@ header button {
     border: unset;
 }
 
+header button:focus {
+    border: unset;
+    outline: none !important;
+    box-shadow: unset;
+}
+
 header button .fa {
     font-size: 2rem;
     color: #325C80;
@@ -50,6 +56,19 @@ header .search input[type="text"]:focus {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+@media screen and (max-width: 420px) {
+    header .search input[type="text"] {
+        width: 15rem !important;
+    }
+}
+
+@media screen and (max-width: 321px) {
+    header .search input[type="text"] {
+        width: 12rem !important;
+    }
+
+}
+
 .list-header {
     display: flex;
     justify-content: space-between;
@@ -72,7 +91,7 @@ header .search input[type="text"]:focus {
     margin-left: 0.5rem;
 }
 
-.list-header .paginator button.fa-angle-right:focus {
+.list-header .paginator button:focus {
     border: unset;
     outline: none !important;
     box-shadow: unset;
@@ -92,6 +111,12 @@ header .search input[type="text"]:focus {
     width: 1000px;
     border: 1px solid lightgray;
     background-color: white;
+}
+
+@media screen and (max-width: 824px) {
+    .content {
+        width: 100% !important;
+    }
 }
 
 .content .religion {
