@@ -13,11 +13,12 @@ class App extends Component {
             isWebSql: true,
             currentPos: 0,
             offline: false,
-            searchText: 'god',
+            searchText: '',
             searchResultAll: [],
             searchResult: [],
             currentPageNumber: 1,
-            maxPageCount: 0
+            maxPageCount: 0,
+            dataLoadingInProgress: false
         };
         this.init();
     }
@@ -35,6 +36,7 @@ class App extends Component {
     };
 
     initWebSQL = () => {
+
         this.createDatabase().then((db) => {
             this.db = db;
             db.transaction((tx) => {
@@ -100,6 +102,7 @@ class App extends Component {
 
 
     createData = () => {
+        this.setState({dataLoadingInProgress: true});
         if (this.state.isWebSql) {
             this.createDataWebSQL();
         } else {
@@ -252,7 +255,9 @@ class App extends Component {
                                 ''
                             ) :
                             <button>
-                                <span className="fa fa-cloud-download-alt" onClick={this.createData}> </span>
+                                <span
+                                    className={"fa " + (this.state.dataLoadingInProgress ? 'fa-sync fa-spin' : 'fa-cloud-download-alt')}
+                                    onClick={this.createData}> </span>
                             </button>
                         }
                     </h1>
@@ -289,17 +294,15 @@ class App extends Component {
                         </div>
 
 
-                        <div className="content">
-                            {this.state.searchResult.map((record) => {
-                                return (
-                                    <div key={record._id} className="content">
-                                        <p className="religion">{record.religion}</p>
-                                        <p className="text">{record.text}</p>
-                                    </div>
-                                )
-                            })
-                            }
-                        </div>
+                        {this.state.searchResult.map((record) => {
+                            return (
+                                <div key={record._id} className="content">
+                                    <p className="religion">{record.religion}</p>
+                                    <p className="text">{record.text}</p>
+                                </div>
+                            )
+                        })
+                        }
                     </div>
                 }
 
