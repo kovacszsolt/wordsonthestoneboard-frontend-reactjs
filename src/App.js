@@ -24,9 +24,10 @@ class App extends Component {
     }
 
     init = () => {
-        const isWebSql = true;
+        let isWebSql = true;
         if (window.openDatabase === undefined) {
             this.setState({isWebSql: false});
+            isWebSql = false;
         }
         if (isWebSql) {
             this.initWebSQL();
